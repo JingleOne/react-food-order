@@ -13,37 +13,55 @@ const CART_REDUCER_ACTION = {
 
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case CART_REDUCER_ACTION.ADD:
-      console.log(`current add payload ${JSON.stringify(action.payload)}`);
-      console.log(`current cart items ${JSON.stringify(state.items)}`);
-      let updatedItems;
-      if (state.items.length === 0){
-        updatedItems = new Array(action.payload);
-      }
-      else{
-        updatedItems = state.items.reduce((acc, item)=>{
-          if (item.id === action.payload.id){
-            const updatedItem = {
-              ...item,
-              amount: item.amount + action.payload.amount,
-            }
-            acc.push(updatedItem);
-          } else{
-            acc.push(item);
+    case CART_REDUCER_ACTION.ADD: {
+      // console.log(`current add payload ${JSON.stringify(action.payload)}`);
+      // console.log(`current cart items ${JSON.stringify(state.items)}`);
+
+      const updatedItems = [];
+      if (state.items.length === 0) {
+        updatedItems.push(action.payload);
+      } else {
+        let found = false;
+        for (let i = 0; i < state.items.length; i++) {
+          if (state.items[i].id === action.payload.id) {
+            updatedItems.push({
+              ...action.payload,
+              amount: state.items[i].amount + action.payload.amount,
+            });
+            found = true;
+          } else {
+            updatedItems.push({ ...state.items[i] });
           }
-          return acc;
-        }, []);
+        }
+        if (!found) {
+          updatedItems.push({ ...action.payload });
+        }
       }
-      
-      console.log(`Updated items: ${JSON.stringify(updatedItems)}`)
+      // console.log(`Updated items: ${JSON.stringify(updatedItems)}`);
       const updatedTotalAmount =
         state.totalAmount + action.payload.price * action.payload.amount;
       return {
         items: updatedItems,
         totalAmount: updatedTotalAmount,
       };
-    case CART_REDUCER_ACTION.REMOVE:
-      return;
+    }
+    case CART_REDUCER_ACTION.REMOVE: {
+      const { id: remove_item_id } = action.payload;
+      const matchedItemIndex = state.items.findIndex(
+        (item) => item.id === remove_item_id
+      );
+      const matchedItem = state.items[matchedItemIndex];
+      if (!matchedItem) {
+        throw new Error("Item to delete does not exist");
+      }
+      const updatedTotalAmount = state.totalAmount - matchedItem.price;
+      const updatedItems = [...state.items];
+      //updatedItems[matchedItemIndex] =
+      return {
+        items: updatedItems,
+        totalAmount: updatedTotalAmount,
+      };
+    }
     default:
       return defaultCartState;
   }

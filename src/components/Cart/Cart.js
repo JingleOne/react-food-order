@@ -9,8 +9,15 @@ const Cart = (props) => {
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
   const hasItem = cartCtx.items.length > 0;
 
-  const handleCartRemvoe = id => {cartCtx.removeItem(id)};
-  const handleCartAdd = item => {cartCtx.addItem(item)};
+  const handleCartRemove = (id) => {
+    cartCtx.removeItem(id);
+  };
+  const handleCartAdd = (item) => {
+    cartCtx.addItem({
+      ...item,
+      amount: 1,
+    });
+  };
 
   const cartItems = (
     <ul className={classes["cart-items"]}>
@@ -20,7 +27,7 @@ const Cart = (props) => {
           name={item.name}
           amount={item.amount}
           price={+item.price}
-          onRemove={handleCartRemvoe.bind(null, item.id)}
+          onRemove={handleCartRemove.bind(null, item.id)}
           onAdd={handleCartAdd.bind(null, item)}
         />
       ))}
