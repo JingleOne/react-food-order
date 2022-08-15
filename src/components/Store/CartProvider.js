@@ -14,7 +14,28 @@ const CART_REDUCER_ACTION = {
 const cartReducer = (state, action) => {
   switch (action.type) {
     case CART_REDUCER_ACTION.ADD:
-      const updatedItems = state.items.concat(action.payload);
+      console.log(`current add payload ${JSON.stringify(action.payload)}`);
+      console.log(`current cart items ${JSON.stringify(state.items)}`);
+      let updatedItems;
+      if (state.items.length === 0){
+        updatedItems = new Array(action.payload);
+      }
+      else{
+        updatedItems = state.items.reduce((acc, item)=>{
+          if (item.id === action.payload.id){
+            const updatedItem = {
+              ...item,
+              amount: item.amount + action.payload.amount,
+            }
+            acc.push(updatedItem);
+          } else{
+            acc.push(item);
+          }
+          return acc;
+        }, []);
+      }
+      
+      console.log(`Updated items: ${JSON.stringify(updatedItems)}`)
       const updatedTotalAmount =
         state.totalAmount + action.payload.price * action.payload.amount;
       return {
