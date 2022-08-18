@@ -46,17 +46,26 @@ const cartReducer = (state, action) => {
       };
     }
     case CART_REDUCER_ACTION.REMOVE: {
-      const { id: remove_item_id } = action.payload;
+      const remove_item_id = action.payload;
       const matchedItemIndex = state.items.findIndex(
         (item) => item.id === remove_item_id
       );
+      console.log(action.payload);
+      console.log(`current cart items ${JSON.stringify(state.items)}`);
+      console.log(`current matched item ${matchedItemIndex}`);
       const matchedItem = state.items[matchedItemIndex];
       if (!matchedItem) {
         throw new Error("Item to delete does not exist");
       }
       const updatedTotalAmount = state.totalAmount - matchedItem.price;
-      const updatedItems = [...state.items];
-      //updatedItems[matchedItemIndex] =
+      let updatedItems;
+      const updatedItemAmount = state.items[matchedItemIndex].amount-1;
+      if (updatedItemAmount <= 0){
+        updatedItems = state.items.filter(item => item.id !== remove_item_id);
+      }else{
+        updatedItems = [...state.items];
+        updatedItems[matchedItemIndex] = {...updatedItems[matchedItemIndex], amount: updatedItemAmount}
+      }
       return {
         items: updatedItems,
         totalAmount: updatedTotalAmount,
