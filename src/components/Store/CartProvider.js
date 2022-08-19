@@ -14,9 +14,6 @@ const CART_REDUCER_ACTION = {
 const cartReducer = (state, action) => {
   switch (action.type) {
     case CART_REDUCER_ACTION.ADD: {
-      // console.log(`current add payload ${JSON.stringify(action.payload)}`);
-      // console.log(`current cart items ${JSON.stringify(state.items)}`);
-
       const updatedItems = [];
       if (state.items.length === 0) {
         updatedItems.push(action.payload);
@@ -34,10 +31,9 @@ const cartReducer = (state, action) => {
           }
         }
         if (!found) {
-          updatedItems.push({ ...action.payload });
+          updatedItems.push(action.payload);
         }
       }
-      // console.log(`Updated items: ${JSON.stringify(updatedItems)}`);
       const updatedTotalAmount =
         state.totalAmount + action.payload.price * action.payload.amount;
       return {
@@ -50,21 +46,21 @@ const cartReducer = (state, action) => {
       const matchedItemIndex = state.items.findIndex(
         (item) => item.id === remove_item_id
       );
-      console.log(action.payload);
-      console.log(`current cart items ${JSON.stringify(state.items)}`);
-      console.log(`current matched item ${matchedItemIndex}`);
       const matchedItem = state.items[matchedItemIndex];
       if (!matchedItem) {
         throw new Error("Item to delete does not exist");
       }
       const updatedTotalAmount = state.totalAmount - matchedItem.price;
       let updatedItems;
-      const updatedItemAmount = state.items[matchedItemIndex].amount-1;
-      if (updatedItemAmount <= 0){
-        updatedItems = state.items.filter(item => item.id !== remove_item_id);
-      }else{
+      const updatedItemAmount = state.items[matchedItemIndex].amount - 1;
+      if (updatedItemAmount <= 0) {
+        updatedItems = state.items.filter((item) => item.id !== remove_item_id);
+      } else {
         updatedItems = [...state.items];
-        updatedItems[matchedItemIndex] = {...updatedItems[matchedItemIndex], amount: updatedItemAmount}
+        updatedItems[matchedItemIndex] = {
+          ...updatedItems[matchedItemIndex],
+          amount: updatedItemAmount,
+        };
       }
       return {
         items: updatedItems,
